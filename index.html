@@ -148,6 +148,214 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-my-tree" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/09/my-tree/">my-tree.md</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/09/my-tree/" class="archive-article-date">
+  	<time datetime="2020-07-08T17:33:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="创造一颗自己的二叉树"><a href="#创造一颗自己的二叉树" class="headerlink" title="创造一颗自己的二叉树"></a>创造一颗自己的二叉树</h1><p>继链表后，二叉树成为了我学习数据结构道路上的第二只拦路虎</p>
+<p>二叉树不仅仅复杂在每个节点有两个子节点，更复杂在其本身的操作上。</p>
+<p>在链表中可以用循环搞定的东西，到了二叉树就全变成 <code>递归</code> 了</p>
+<p>所以，二叉树可以说是前一章的结束，下一章的开始。</p>
+<hr>
+<p><strong>前排提示，我不喜欢在我的代码中加入各式各样的注释</strong></p>
+<p><strong>如果你能接受我的任性，请继续</strong></p>
+<hr>
+<p>从二叉树还延伸出各种各样令人头疼的数据结构：</p>
+<ul>
+<li><p>AVL 树</p>
+</li>
+<li><p>自平衡二叉树</p>
+</li>
+<li><p>红黑树</p>
+</li>
+<li><p>B 树</p>
+</li>
+<li><p>B+树</p>
+</li>
+</ul>
+<p>……</p>
+<p>二叉树的学习，是为了向下一个知识进军</p>
+<hr>
+<h2 id="设计一颗-树根"><a href="#设计一颗-树根" class="headerlink" title="设计一颗 树根"></a>设计一颗 <code>树根</code></h2><p>俗话说 <code>万事开头难</code> 只要抓住树根的本质，我们就能更随心所欲地操纵二叉树</p>
+<p>以下给出 <code>C 语言</code> 的实现方式</p>
+<p>值得一提的是，在这篇文章的大部分环节，我都会使用 <code>C 语言</code></p>
+<p>因为我想通过 C 对数据结构的学习，加深我对底层操作的理解</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> *<span class="title">lChild</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> *<span class="title">rChild</span>;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">&#125; treeNode;</span><br></pre></td></tr></table></figure>
+
+<p>以上代码实现了一个树节点的定义</p>
+<p>学过 <code>链表</code> 的同学肯定不会陌生，当创建一个 <code>链表节点</code> 时</p>
+<p>我们必须要让这个节点具有指向下一个节点的能力</p>
+<p>我们可以将之理解为 <code>结点指针</code></p>
+<p>让我们把这个代码拆成两部分</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> &#123;</span>...&#125; treeNode;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> *<span class="title">lChild</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">treeNode</span> *<span class="title">rChild</span>;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>怎么样，是不是感觉明白了一点</p>
+<p>其实 <code>typedef</code> 的作用就是方便我们调用这个节点的类型</p>
+<hr>
+<h2 id="种植-树根"><a href="#种植-树根" class="headerlink" title="种植 树根"></a>种植 <code>树根</code></h2><p>光有了一个节点怎么足够呢，我们要让这棵树长起来，一个个结点的 <code>创建</code> ， <code>添加</code> 便是不可缺少之事</p>
+<p>但是我们不能放任树根肆意生长，我们要保证树枝在产生时，一定是</p>
+<ul>
+<li>稳定的（有分配足够的内存）</li>
+<li>可持续的（方便后代 <code>嫁接</code> 到这个根的末尾）</li>
+</ul>
+<p>所以，我们要自己定义函数，来规范树的生长</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">treeNode *<span class="title">buildTree</span><span class="params">(<span class="keyword">int</span> rootData)</span> </span>&#123;</span><br><span class="line">    treeNode *root = <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(treeNode));</span><br><span class="line">    root-&gt;data = rootData;</span><br><span class="line">    root-&gt;lChild = <span class="literal">NULL</span>;</span><br><span class="line">    root-&gt;rChild = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> root;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里， <code>malloc</code> 函数给予树根足够的空间生长</p>
+<p>而 <code>NULL</code> 值的设定可以保证对于树枝的访问是安全的，用户不会读到一大堆莫名其妙的数据</p>
+<p>考虑更周到的人还可以思索一下当 <code>malloc</code> 失败时：</p>
+<ul>
+<li><p>作出什么样的提示是符合用户想法的</p>
+</li>
+<li><p>能否允许用户进行一些他们自己心里有数的过界操作</p>
+</li>
+</ul>
+<hr>
+<h2 id="让树-生长"><a href="#让树-生长" class="headerlink" title="让树 生长"></a>让树 <code>生长</code></h2><p>我们已经种植下去了一个树根，接下来就要让他成长</p>
+<p>毕竟，只有一棵树根的树除了能在内存洪流中绊人一脚之外，也没什么用处</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addNode</span><span class="params">(treeNode *root, <span class="keyword">int</span> nodeData)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (nodeData == root-&gt;data) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"repeat"</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nodeData &gt; root-&gt;data) &#123;</span><br><span class="line">        <span class="keyword">if</span> (root-&gt;rChild == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            root-&gt;rChild = buildTree(nodeData);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            addNode(root-&gt;rChild, nodeData);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (root-&gt;lChild == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            root-&gt;lChild = buildTree(nodeData);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            addNode(root-&gt;lChild, nodeData);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们就要正式面对那些令人胆寒的递归操作了</p>
+<p>大部分初步接受计算机的人基本都会认为递归操作很神奇，认为它在冥冥之中有一丝简洁美</p>
+<p>但是用<strong>自己定义自己</strong>这一行为又不会让人觉得踏实</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (root-&gt;rChild == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    root-&gt;rChild = buildTree(nodeData);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    addNode(root-&gt;rChild, nodeData);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们将它的一部分代码拿出来仔细观察，而也只有在这时，我们才会体会到递归的美丽和优雅</p>
+<p>我们可以看到先前 <code>buildTree</code> 时留下的 <code>NULL</code> 树根帮了大忙，它帮我们很好地区分了已经使用的节点和未曾使用的节点</p>
+<p>当子节点未使用且符合条件时，我们把数值连接到对应的子节点上，并令这个节点也充分舒展（ <code>buildTree</code> 将发挥它伟大的作用 ）</p>
+<p>当<strong>子节点</strong>不满足条件时，我们就把<strong>子节点的子节点</strong>也传递进去，如果<strong>子节点的子节点</strong>也不满足，他会接着向<strong>其子节点</strong>传递……</p>
+<p>最终找到那个满足条件的树根，函数之后就<strong>一层层地将那个树根返回</strong></p>
+<hr>
+<p>在顿悟递归的一瞬间，你就会被它简洁优美的内核震撼</p>
+<p>这在我们脑中理所当然的思想，似乎从来没有被开发过</p>
+<hr>
+<h2 id="我的树长了-多高-了"><a href="#我的树长了-多高-了" class="headerlink" title="我的树长了 多高 了"></a>我的树长了 <code>多高</code> 了</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">height</span><span class="params">(treeNode *root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) &#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">    <span class="keyword">if</span> (root-&gt;rChild == <span class="literal">NULL</span> &amp;&amp; root-&gt;lChild == <span class="literal">NULL</span>) &#123; <span class="keyword">return</span> <span class="number">1</span>; &#125;</span><br><span class="line">    <span class="keyword">int</span> leftHeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> rightHeight = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (root-&gt;lChild) &#123;</span><br><span class="line">        leftHeight += <span class="number">1</span>;</span><br><span class="line">        leftHeight += <span class="built_in">height</span>(root-&gt;lChild);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (root-&gt;rChild) &#123;</span><br><span class="line">        rightHeight += <span class="number">1</span>;</span><br><span class="line">        rightHeight += <span class="built_in">height</span>(root-&gt;rChild);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (leftHeight &gt; rightHeight) ? leftHeight : rightHeight;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从这串代码里，我们能看出递归对于树的重要性</p>
+<p>一般，评价树的高度是找最长的那一根分支</p>
+<p>当我们从上往下找时，最长的那一根分支可能左拐，右拐，中间截断，人类肉眼尚且不能一步观测到最长的分支</p>
+<p>而递归用了一个笨方法，它先把自己的计数设定为零，随后找到所有节点的最根部</p>
+<p>一个一个地向上返回，而且只返回最大值，一个新生的节点肯定比不过从更古老节点传上来的长度，正如</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> (leftHeight &gt; rightHeight) ? leftHeight : rightHeight;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="那个苹果-在哪里"><a href="#那个苹果-在哪里" class="headerlink" title="那个苹果 在哪里"></a>那个苹果 <code>在哪里</code></h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">treeNode *<span class="title">findNode</span><span class="params">(treeNode *root, <span class="keyword">int</span> findData)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root) &#123;</span><br><span class="line">        <span class="keyword">if</span> (root-&gt;data == findData) &#123;</span><br><span class="line">            <span class="keyword">return</span> root;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (root-&gt;data &gt; findData) &#123;</span><br><span class="line">            findNode(root-&gt;lChild, findData);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            findNode(root-&gt;rChild, findData);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可以将其理解为 <code>addNode</code> 的简化版，只有比较和输出，并没有添加，删除，修改操作</p>
+<p>当目标值较大时朝右边走，较小时朝左边走，是一个可能被人忽视的小技巧</p>
+<p>但是不要过于堕落，你甚至只需要走半步 —— 把参数传进去，剩下的东西让递归帮你完成</p>
+<hr>
+<h2 id="亲爱的小姐，能请您帮我-描述一下-这棵树吗"><a href="#亲爱的小姐，能请您帮我-描述一下-这棵树吗" class="headerlink" title="亲爱的小姐，能请您帮我 描述一下 这棵树吗"></a>亲爱的小姐，能请您帮我 <code>描述一下</code> 这棵树吗</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">frontErgodic</span><span class="params">(treeNode *root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, root-&gt;data);</span><br><span class="line">        frontErgodic(root-&gt;lChild);</span><br><span class="line">        frontErgodic(root-&gt;rChild);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">middleErgodic</span><span class="params">(treeNode *root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root) &#123;</span><br><span class="line">        middleErgodic(root-&gt;lChild);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, root-&gt;data);</span><br><span class="line">        middleErgodic(root-&gt;rChild);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">backErgodic</span><span class="params">(treeNode *root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root) &#123;</span><br><span class="line">        backErgodic(root-&gt;lChild);</span><br><span class="line">        backErgodic(root-&gt;rChild);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, root-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们一般把上面三种方式分别称为： <code>前序遍历</code> 、 <code>中序遍历</code> 和 <code>后序遍历</code></p>
+<p>仔细观察 <code>printf</code> 的位置，再加上你对递归的一点点理解，看懂这一步并不困难</p>
+<p>我总是不愿意使用这类功能，因为我常常直接在 <code>debug</code> 时直接观察它的结构</p>
+<hr>
+<h2 id="我需要把这颗长坏的树枝-锯下来"><a href="#我需要把这颗长坏的树枝-锯下来" class="headerlink" title="我需要把这颗长坏的树枝 锯下来"></a>我需要把这颗长坏的树枝 <code>锯下来</code></h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">deleteNode</span><span class="params">(treeNode *root, <span class="keyword">int</span> deleteData)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root) &#123;</span><br><span class="line">        treeNode *LCFind = findNode(root-&gt;lChild, deleteData);</span><br><span class="line">        treeNode *RCFind = findNode(root-&gt;rChild, deleteData);</span><br><span class="line">        <span class="keyword">if</span> (LCFind == <span class="literal">NULL</span> &amp;&amp; RCFind == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"delete failed, data %d not exist\n"</span>, deleteData);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        treeNode *tmp = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (LCFind) &#123;</span><br><span class="line">            <span class="keyword">if</span> (LCFind-&gt;rChild == <span class="literal">NULL</span> &amp;&amp; LCFind-&gt;lChild == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="built_in">free</span>(LCFind);</span><br><span class="line">                root-&gt;lChild = <span class="literal">NULL</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (LCFind-&gt;lChild &amp;&amp; LCFind-&gt;rChild) &#123;</span><br><span class="line">                tmp = LCFind-&gt;lChild;</span><br><span class="line">                linkNode(tmp, LCFind-&gt;rChild);</span><br><span class="line">                <span class="built_in">free</span>(LCFind);</span><br><span class="line">                root-&gt;lChild = tmp;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (LCFind-&gt;lChild) &#123;</span><br><span class="line">                tmp = LCFind-&gt;lChild;</span><br><span class="line">                <span class="built_in">free</span>(LCFind);</span><br><span class="line">                root-&gt;lChild = tmp;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                tmp = LCFind-&gt;rChild;</span><br><span class="line">                <span class="built_in">free</span>(LCFind);</span><br><span class="line">                root-&gt;lChild = tmp;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (RCFind-&gt;rChild == <span class="literal">NULL</span> &amp;&amp; RCFind-&gt;lChild == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="built_in">free</span>(LCFind);</span><br><span class="line">                root-&gt;rChild = <span class="literal">NULL</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (RCFind-&gt;lChild &amp;&amp; RCFind-&gt;rChild) &#123;</span><br><span class="line">                tmp = RCFind-&gt;lChild;</span><br><span class="line">                linkNode(tmp, RCFind-&gt;rChild);</span><br><span class="line">                <span class="built_in">free</span>(RCFind);</span><br><span class="line">                root-&gt;rChild = tmp;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (RCFind-&gt;lChild) &#123;</span><br><span class="line">                tmp = RCFind-&gt;lChild;</span><br><span class="line">                <span class="built_in">free</span>(RCFind);</span><br><span class="line">                root-&gt;rChild = tmp;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                tmp = RCFind-&gt;rChild;</span><br><span class="line">                <span class="built_in">free</span>(RCFind);</span><br><span class="line">                root-&gt;lChild = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看看这复杂的代码，不得不承认，删除二叉树中的某一个节点真的是一件费力的事情</p>
+<p>对于每一个节点，我们需要知道：</p>
+<ul>
+<li><p>如果它是要被删除的节点：</p>
+<ul>
+<li>他的子节点有多少个？（ 0、1、2 ）</li>
+<li>节点 <code>free</code> 后，如何处理<strong>父节点</strong></li>
+<li>我如何处理才能将原来的数据有序排放</li>
+</ul>
+</li>
+<li><p>如果他不是要被删除的节点：</p>
+<ul>
+<li>这是最后一个节点了吗</li>
+<li>下一个节点是什么</li>
+<li>我该往哪里走</li>
+</ul>
+</li>
+</ul>
+<p>递归查找部分，早在代码的开始已经完成，即：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">treeNode *LCFind = findNode(root-&gt;lChild, deleteData);</span><br><span class="line">treeNode *RCFind = findNode(root-&gt;rChild, deleteData);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (LCFind == <span class="literal">NULL</span> &amp;&amp; RCFind == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"delete failed, data %d not exist\n"</span>, deleteData);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>单单是一次情况判断，就足够复杂</p>
+<hr>
+<h3 id="为什么定义-LCFind-和-RCFind"><a href="#为什么定义-LCFind-和-RCFind" class="headerlink" title="为什么定义 LCFind 和 RCFind"></a>为什么定义 <code>LCFind</code> 和 <code>RCFind</code></h3><p>（ 解释：<code>left-child-find</code> 和 <code>right-child-find</code> ）</p>
+<p>因为我们删除后，一定要能找到他的<strong>父节点</strong>，并且把不需要删除的节点<strong>重新接回去</strong></p>
+<p><code>LCFind</code> 和 <code>RCFind</code> 是 <code>root</code> 的左右子节点，自然不能代替掉 <code>root</code> 存在</p>
+<hr>
+<h3 id="linkNode-是什么"><a href="#linkNode-是什么" class="headerlink" title="linkNode 是什么"></a><code>linkNode</code> 是什么</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkNode</span><span class="params">(treeNode *left, treeNode *right)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (left &amp;&amp; right) &#123;</span><br><span class="line">        <span class="keyword">if</span> (left-&gt;rChild == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            left-&gt;rChild = right;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            linkNode(left-&gt;rChild, right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它是一台接骨机器，能将<strong>将要被删除的节点</strong>的<strong>右边子节点集合</strong>的 <code>root</code> 位准确地接到<strong>左侧子节点集合</strong>的最大位，保证树的有序</p>
+<hr>
+<p>对于从未学过数据结构的我来说，二叉树着实为我打开了一扇天窗</p>
+<p>让我能从简单的指针应用中跳脱出来，真正拿他做一些更灵活，更有趣的事情</p>
+<p>之前我对指针的 <code>线性认知</code> 也更新到了 <code>平面认知</code> ，指针的应用变得更加灵活了</p>
+<hr>
+<p>我唯一的遗憾，就是目前还没有发现消减分支的好办法</p>
+<hr>
+<p>二叉树的构建是很简单的，只需要一个劲往下面数数，比较，然后添加节点</p>
+<p>而 <code>AVL树</code> 、 <code>红黑树</code> 、 <code>B树</code> 的每一次添加，删除都有可能造成数的不稳定，从而导致树的结构发生翻天覆地的变化</p>
+<p>在探索数据结构的道路上，我暂时还是不会停下来的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello, world"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你好，世界</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/09/my-tree/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-payment" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
