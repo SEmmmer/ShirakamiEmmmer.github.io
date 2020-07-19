@@ -4,8 +4,7 @@ date: 2019-12-28 14:28:52
 tags: 
      - Vtuber
      - 虚拟主播
-     - BilibiliWorld
-     - BLS
+     - Bilibili World
 ---
 近一个月，我对 Vtuber 这个行业的确是有了更深的认识
 
